@@ -8,6 +8,7 @@ package com.cos.security1.config.auth;
 
 // Security Session => Authentication => UserDetails(PrincipalDetails)
 
+import com.cos.security1.model.NewUser;
 import com.cos.security1.model.User;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
@@ -21,10 +22,15 @@ import java.util.Map;
 @Data
 public class PrincipalDetails implements UserDetails, OAuth2User {
     private User user; //composition
+    private NewUser newUser;
     private Map<String, Object> attributes;
 
     public PrincipalDetails(User user) {
         this.user = user;
+    }
+
+    public PrincipalDetails(NewUser newUser) {
+        this.newUser = newUser;
     }
 
     public PrincipalDetails(User user, Map<String, Object> attributes) {
@@ -35,25 +41,32 @@ public class PrincipalDetails implements UserDetails, OAuth2User {
     // 해당 User 의 권한을 리턴하는 곳!
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        Collection<GrantedAuthority> collect = new ArrayList<>();
-        collect.add(new GrantedAuthority() {
-            @Override
-            public String getAuthority() {
-                return user.getRole();
-            }
+//        Collection<GrantedAuthority> collect = new ArrayList<>();
+//        collect.add(new GrantedAuthority() {
+//            @Override
+//            public String getAuthority() {
+//                return user.getRole();
+//            }
+//        });
+//
+//        return collect;
+
+        Collection<GrantedAuthority> authorities = new ArrayList<>();
+        newUser.getRoleList().forEach(r -> {
+            authorities.add(() -> r);
         });
 
-        return collect;
+        return authorities;
     }
 
     @Override
     public String getPassword() {
-        return user.getPassword();
+        return newUser.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return user.getUsername();
+        return newUser.getUsername();
     }
 
     @Override
