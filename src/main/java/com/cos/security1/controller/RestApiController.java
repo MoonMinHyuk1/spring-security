@@ -4,6 +4,7 @@ import com.cos.security1.config.auth.PrincipalDetails;
 import com.cos.security1.model.NewUser;
 import com.cos.security1.repository.NewUserRepository;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -27,8 +28,8 @@ public class RestApiController {
         return "<h1>token</h1>";
     }
 
-    @GetMapping("user")
-    public String user(Authentication authentication) {
+    @GetMapping("/user")
+    public String user(@NotNull Authentication authentication) {
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         System.out.println("principal : " + principal.getNewUser().getId());
         System.out.println("principal : " + principal.getNewUser().getUsername());
@@ -37,17 +38,17 @@ public class RestApiController {
         return "<h1>user</h1>";
     }
 
-    @GetMapping("manager/reports")
+    @GetMapping("/manager/reports")
     public String reports() {
         return "<h1>reports</h1>";
     }
 
-    @GetMapping("admin/users")
+    @GetMapping("/admin/users")
     public List<NewUser> users() {
         return newUserRepository.findAll();
     }
 
-    @PostMapping("join")
+    @PostMapping("/join")
     public String join(@RequestBody NewUser newUser) {
         newUser.setPassword(bCryptPasswordEncoder.encode(newUser.getPassword()));
         newUser.setRoles("ROLE_USER");
